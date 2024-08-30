@@ -1,3 +1,56 @@
+<?php
+session_start();
+$errors = [];
+
+// セッションからデータを取得
+$name = $_POST['name'] ?? '';
+$huri = $_POST['huri'] ?? '';
+$mail = $_POST['mail'] ?? '';
+$tell = $_POST['tell'] ?? '';
+$choice = $_POST['choice'] ?? '';
+$message = $_POST['message'] ?? '';
+$check = $_POST['check'] ?? false;
+
+// エラーチェック
+if (empty($name)) {
+    $errors[] = "お名前を入力してください。";
+}
+if (empty($huri)) {
+    $errors[] = "フリガナを入力してください。";
+}
+if (empty($mail)) {
+    $errors[] = "メールアドレスを入力してください。";
+} elseif (strpos($mail, '@') === false) {
+    $errors[] = "メールアドレスに@を含めてください。";
+}
+if (empty($tell)) {
+    $errors[] = "電話番号を入力してください。";
+} elseif (!preg_match('/^\d{10}$|^\d{11}$/', $tell)) {
+    $errors[] = "電話番号は10桁または11桁の数字で入力してください。";
+}
+if ($choice === 'option0') {
+    $errors[] = "お問い合わせ項目を選択してください。";
+}
+if (empty($message)) {
+    $errors[] = "お問い合わせ内容を入力してください。";
+}
+if (!$check) {
+    $errors[] = "個人情報保護方針に同意する必要があります。";
+}
+
+ 
+    
+// ボタンのテキストとアクションURLを決定
+if (empty($errors)) {
+    $buttonText = "送信";
+    // $actionUrl = 'task9-1.php';
+} else {
+    $buttonText = "確認";
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -30,48 +83,48 @@
   </div>
 
   <div class="wrapper">
-
+  <div class="errors">
+      <?= implode('<br>', $errors) ?>
+  </div>
     <hr style=" color: darkgrey;">
-    <form action="task8-1.php" method="post">
+    <form action="<?= $actionUrl ?>" method="post">
       <div class="qes bottom top_margin">
         <div class="cate">
           <label><h4>お名前</h4></label>
           <div class="ess">必須</div>
         </div>
-        <input type="text" class="input" name="name" placeholder="山田太郎" >
+        <input type="text" class="input" name="name" placeholder="山田太郎" value="<?= $name?>">
       </div>
       <div class="qes bottom">
         <div class="cate">
           <label><h4>フリガナ</h4></label>
           <div class="ess">必須</div>
         </div>
-        <input type="text" class="input" name="huri" placeholder="ヤマダタロウ" >
+        <input type="text" class="input" name="huri" placeholder="ヤマダタロウ" value="<?=$huri?>">
       </div>
       <div class="qes bottom">
         <div class="cate">
           <label><h4>メールアドレス</h4></label>
           <div class="ess">必須</div>
         </div>
-        <input type="text" class="input" name="mail" placeholder="info@fast-creademy.jp" >
-         <span id="emailError" style="color: red; display: none;">正しいメールアドレスを入力してください。</span>
+        <input type="mail" class="input" name="mail" placeholder="info@fast-creademy.jp"value="<?=$mail?>">
       </div>
       <div class="qes bottom">
         <div class="cate">
           <label><h4>電話番号</h4></label>
           <div class="ess">必須</div>
         </div>
-        <input type="text" class="input" name="tell" placeholder="info@fast-creademy.jp" >
-        <span id="phoneError" style="color: red; display: none;">正しい電話番号を入力してください。</span>
+        <input type="text" class="input" name="tell" placeholder="info@fast-creademy.jp"value="<?=$tell?>">
       </div>
       <div class="qes bottom">
         <div class="cate">
           <label><h4>お問い合わせ項目</h4></label>
           <div class="ess">必須</div>
         </div>
-        <select name="choice" class="input" name="choice" >
-          <option value="option0">選択してください</option>
-          <option value="option1">選択肢1</option>
-          <option value="option2">選択肢2</option>
+        <select name="choice" class="input">
+          <option value="option0" <?= $choice === 'option0' ? 'selected' : '' ?>>選択してください</option>
+          <option value="option1" <?= $choice === 'option1' ? 'selected' : '' ?>>選択肢1</option>
+          <option value="option2" <?= $choice === 'option2' ? 'selected' : '' ?>>選択肢2</option>
         </select>
       </div>
       <div class="qes bottom">
@@ -79,7 +132,7 @@
           <label><h4>お問い合わせ内容</h4></label>
           <div class="ess">必須</div>
         </div>
-        <textarea class="message input" name="message" placeholder="こちらにお問い合わせ内容を入力してください。"></textarea>
+        <textarea class="message input" name="message" placeholder="こちらにお問い合わせ内容を入力してください。"><?= htmlspecialchars($message) ?></textarea>
       </div>
       <div class="qes bottom  nobet">
         <div class="cate">
@@ -87,13 +140,13 @@
           <div class="ess">必須</div>
         </div>
         <div class="cate left">
-          <input type="checkbox" class="box" name="check" ><a href="#" color: darkgreen style="color: darkgreen">個人情報保護方針
+        <input type="checkbox" class="box" name="check" <?= $check ? 'checked' : '' ?>><a href="#" color: darkgreen style="color: darkgreen"value="<?=$check?>">個人情報保護方針
           </a>
           <p>に同意します。</p>
         </div>
       </div>
       <div class="btn sec1">
-        <input type="submit" class="gre" value="確認">
+      <input type="submit" class="gre" value="<?=$buttonText?>">
       </div>
     </form>
   </div>
